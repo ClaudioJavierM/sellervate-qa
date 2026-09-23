@@ -2,11 +2,10 @@
 
 ## Product
 
-**The real problem.** Not "reviewing is slow". Marta can already tell a good reply in three
-reads. The problem is that her judgement leaves no trace: it lives in Slack pings, so she cannot
-coach from it, cannot see a pattern (the order-history miss ran for a month) and cannot answer a
-client with a number. The same paragraph is excellent for one brand and wrong for another, so
-any record has to be per brand and graded against that brand's standard.
+**The real problem.** Not that reviewing is slow: Marta's judgement leaves no trace. It lives in
+Slack pings, so she can't coach from it, can't see a pattern (the order-history miss ran a month)
+and can't answer a client with a number. And "good" differs per brand, so the record has to be
+per brand, graded against that brand's standard.
 
 **What I built first, and why.** I read it as *reviewing that produces proof*: the loop and
 the brand report, in that order, and nothing that doesn't feed one of them.
@@ -21,20 +20,16 @@ the brand report, in that order, and nothing that doesn't feed one of them.
 - **The specialist's view** (`/feedback`), because the notes say it must exist and it's cheap
   once the data is right.
 
-**What I left out.** The coaching library (scored replies already carry the reasoning; a
-"use as example" flag plus a filtered view is the V2, not a new model). Calibration between
-two leads (the schema allows two reviews per reply for exactly this). Helpdesk import. Real
-auth. Read/unread for specialists. Editing or deleting a brand change. Dark mode. A
-client-facing share link: printing the report is the stand-in.
+**What I left out.** The coaching library (scored replies already carry the reasoning; it's an
+"example" flag and a view). Calibration between leads (the schema allows it). Helpdesk import,
+real auth, read/unread, editing brand changes, dark mode, a client share link (print stands in).
 
-**Where a model would earn its place.** *Not* in scoring: the value is Marta's judgement and a
-model grading replies would erode the thing the client pays for. The one place I'd put one is
-**choosing which five to read**: a classifier that flags replies likely to carry a *critical*
-issue (a return offered with no diagnostic question, a policy number that contradicts the
-brand's policy) and pushes them into the suggested five. It sits before the human, never
-replaces them, and its misses cost nothing worse than today. Before trusting it: a few hundred
-reviewed replies per brand, and evidence that flagged replies are reviewed as critical far more
-often than random ones. Measured against the review data this tool is now collecting.
+**Where a model would earn its place.** *Not* in scoring: Marta's judgement is the product. The
+one place is **choosing which five to read**: flag replies likely to carry a *critical* issue
+(a return with no diagnostic question, a policy figure that contradicts the brand's) and push
+them into the suggested five. It sits before the human and its misses cost nothing worse than
+today. Before trusting it: a few hundred reviews per brand, and flagged replies being judged
+critical far more often than random ones, measured on the data this tool now collects.
 
 **Before V2 I'd ask:** does the client see specialist names? Should specialists see a review at
 once or when the lead publishes a batch? Do leads need to calibrate? Which helpdesks, and is the
@@ -63,9 +58,8 @@ Grants are revoked and re-granted minimally (a review's `score`/`note` are the o
 columns). The app checks again for clean 404s, but there is no service-role client, so a missing
 check in TypeScript fails closed. 19 pgTAP tests try to break it (`npm run db:test`).
 
-**Authentication** is a person picker. Choosing a person makes the server sign a JWT
-(`sub` = person, `role` = authenticated) with the Supabase JWT secret and set it as an httpOnly
-cookie; each request builds a Supabase client carrying it, which is what RLS reads. Real auth
+**Authentication** is a person picker: the server signs a JWT (`sub` = person) with the Supabase
+secret into an httpOnly cookie, and every query carries it, which is what RLS reads. Real auth
 replaces that one function with Supabase Auth (staff SSO), maps `auth.users` to `people`,
 deletes `demo_personas()` and adds offboarding. Policies don't change.
 
@@ -76,18 +70,28 @@ helpers run per row; at volume the lead's brand list belongs in a JWT claim. The
 
 ## AI
 
-_Edit this section so it describes how you actually worked. Draft of what happened:_
+Claude Code wrote all of the code and opened every pull request. My part was the decisions: the
+reading of the brief (reviewing that produces proof), local Supabase, and how review would work.
+It read the Next 16 docs bundled in `node_modules` before writing anything, because the
+installed version is newer than its training.
 
-I used Claude Code for all of the code. My input was the reading of the brief, the priorities
-and the review of every pull request. I had it read the Next 16 docs bundled in
-`node_modules` before writing anything, since the installed version is newer than the model's
-training. What worked: stating the security model before the schema (RLS as the boundary, no
-service role), then asking for a pgTAP test that tries to break it, and checking every screen
-against screenshots rather than trusting the diff. Where it was wrong and I overrode it: the
-first queue ordering sent all five suggestions to one specialist (visible only on screen); the
-first print view still exposed specialist names and internal notes; _add your own_.
+**How review worked, and why.** Instead of me writing every PR review from scratch, the agent
+does a first pass on each PR as a reviewer, posted and labelled as its own ("Agent review"):
+what's good, what it's letting go and why, what must change. I read the PR and that review and
+add my own sign-off or objection before merging. I'm saying so plainly because it isn't the
+shape the brief asked for. It's the shape I'd actually use: the agent is a fast, tireless first
+reviewer, and the merge decision stays mine.
 
-> _Paste the prompt or session excerpt you're most pleased with._
+**Where it was right, and where it was corrected.** It was right to insist on RLS as the only
+boundary with no service-role client, and to prove it with pgTAP tests instead of asserting it.
+It was wrong twice, and both times checking the running app caught it rather than reading the
+diff: the first queue ordering handed all five suggestions to a single specialist, and the
+first "print for the client" view still printed specialist names and internal coaching notes
+(requested on #6, fixed in a follow-up commit on that branch).
+
+> _Prompt that started it:_ "Vamos a trabajar en un nuevo proyecto, esta es la ruta del PDF que
+> contiene todas las instrucciones, por favor analizar y completar." _Then: choosing the reading
+> and the review workflow when it asked._ **(Author: adjust this section so it's accurate.)**
 
 ## Status
 
@@ -95,14 +99,12 @@ first print view still exposed specialist names and internal notes; _add your ow
 specialist view, isolation tests, seed.
 **Half done:** the print view is a stand-in for a client-facing report; the queue's "reviewed"
 state ignores a second reviewer.
-**Not touched:** helpdesk import, coaching library, calibration, real auth, specialist
-read/unread, editing or deleting brand changes, dark mode.
+**Not touched:** everything under "What I left out".
 **Order:** real auth → import from one helpdesk → specialist read/unread → coaching library →
 calibration.
 
-**What I'd test first:** `src/lib/report.ts` bucketing, particularly weeks that cross a DST
-change. It's pure and it's what the client sees, but the isolation tests were worth more
-in hour five.
+**What I'd test first:** `src/lib/report.ts` week bucketing across DST changes: pure, and it's
+what the client sees. The isolation tests were worth more in hour five.
 
 **The one thing I'd flag hardest in someone else's PR:** the Next server holds the JWT secret
 and will sign a token for anyone you pick. Any bug in the sign-in action is a full
