@@ -370,6 +370,15 @@ export type Database = {
           summary: string
         }[]
       }
+      save_review: {
+        Args: {
+          p_issue_keys: string[]
+          p_note: string
+          p_reply_id: string
+          p_score: number
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

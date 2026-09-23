@@ -2,7 +2,7 @@
 -- Run with: npx supabase test db
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(16);
+select plan(19);
 
 -- Fixtures: brand A (lead A, specialists S1 and S2) and brand B (lead B, S1).
 -- S1 writes for both brands; S2 only for A.
@@ -85,6 +85,28 @@ select pg_temp.act_as('00000000-0000-0000-0000-000000000052');
 set local role authenticated;
 select is((select count(*)::int from public.replies), 1, 'S2 sees one reply, their own');
 select is((select count(*)::int from public.brands where slug = 'brand-b'), 0, 'S2 cannot see brand B exists');
+reset role;
+
+-- ---------------------------------------------------------------- save_review() is not a way around RLS
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+set local role authenticated;
+select throws_ok(
+  $$select public.save_review('00000000-0000-0000-0000-0000000ca001', 1::smallint, 'x', '{}')$$,
+  'P0002', null, 'lead B cannot review a brand A reply through save_review');
+reset role;
+
+select pg_temp.act_as('00000000-0000-0000-0000-000000000051');
+set local role authenticated;
+select throws_ok(
+  $$select public.save_review('00000000-0000-0000-0000-0000000ca001', 4::smallint, 'x', '{}')$$,
+  '42501', null, 'a specialist cannot review their own reply through save_review');
+reset role;
+
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000a1');
+set local role authenticated;
+select lives_ok(
+  $$select public.save_review('00000000-0000-0000-0000-0000000ca002', 3::smallint, 'updated', '{}')$$,
+  'lead A can save a review for their brand');
 reset role;
 
 select * from finish();
