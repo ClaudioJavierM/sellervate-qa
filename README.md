@@ -8,7 +8,7 @@ whether things are getting better.
 
 It is not a helpdesk. Nobody writes to a customer here.
 
-**Time spent:** _fill in real hours_ · **Starter:** `create-next-app` (Next.js 16, App Router, TypeScript, Tailwind 4). No other boilerplate.
+**Time spent:** ~5.5 hours, in one session on 23 Sep 2026, from reading the brief to the last merge. Claude Code wrote the code; my time went into choosing the reading and the review workflow, reviewing each PR and testing the app. · **Starter:** `create-next-app` (Next.js 16, App Router, TypeScript, Tailwind 4). No other boilerplate.
 Reasoning, trade-offs and what was cut: [DECISIONS.md](DECISIONS.md).
 
 ## Run it

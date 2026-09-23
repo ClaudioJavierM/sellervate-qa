@@ -91,7 +91,7 @@ first "print for the client" view still printed specialist names and internal co
 
 > _Prompt that started it:_ "Vamos a trabajar en un nuevo proyecto, esta es la ruta del PDF que
 > contiene todas las instrucciones, por favor analizar y completar." _Then: choosing the reading
-> and the review workflow when it asked._ **(Author: adjust this section so it's accurate.)**
+> and the review workflow when it asked._
 
 ## Status
 
