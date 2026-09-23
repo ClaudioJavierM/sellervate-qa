@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens.
+ *
+ * Type: two families with two jobs. Geist for the tool itself, and a serif
+ * (Source Serif 4) only for what a specialist wrote to a customer, so the
+ * thing being judged never blends into the chrome judging it. Mono for
+ * numbers that are compared down a column.
+ * Scale: 12 / 13 / 14 / 16 / 20 / 26 / 34, a ~1.25 step. 14 is the UI base,
+ * 16 is the reading size for replies.
+ *
+ * Colour: warm neutral paper and ink so long reading sessions are calm, one
+ * accent (ink blue) for "the thing to do next", and a score scale that is the
+ * only saturated colour on screen, so the eye goes to judgements first.
+ * Score colours step from rust to green; severity reuses the same hues so
+ * "critical" and "poor" read as the same kind of bad.
+ */
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-source-serif), ui-serif, Georgia, serif;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 0.875rem;
+  --text-base--line-height: 1.375rem;
+  --text-md: 1rem;
+  --text-md--line-height: 1.625rem;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.625rem;
+  --text-xl--line-height: 2rem;
+  --text-2xl: 2.125rem;
+  --text-2xl--line-height: 2.5rem;
+
+  --color-paper: #f6f5f1;
+  --color-surface: #ffffff;
+  --color-sunken: #efede7;
+  --color-line: #e2dfd7;
+  --color-line-strong: #cfcbc0;
+  --color-ink: #1d1c1a;
+  --color-ink-soft: #4a4843;
+  --color-muted: #77736b;
+
+  --color-accent: #2f45c9;
+  --color-accent-hover: #2436a3;
+  --color-accent-soft: #e8ebfb;
+
+  --color-score-1: #b4401f;
+  --color-score-1-soft: #f8e6df;
+  --color-score-2: #a86a12;
+  --color-score-2-soft: #f6ecd9;
+  --color-score-3: #4f7d4f;
+  --color-score-3-soft: #e5efe2;
+  --color-score-4: #1f6a4c;
+  --color-score-4-soft: #d9ece3;
+
+  --radius-card: 10px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
