@@ -6,7 +6,7 @@ export async function AppHeader() {
   const viewer = await getViewer();
 
   return (
-    <header className="border-b border-line bg-surface">
+    <header className="border-b border-line bg-surface print:hidden">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <span aria-hidden className="grid size-6 place-items-center rounded-md bg-ink text-[11px] font-bold text-paper">
