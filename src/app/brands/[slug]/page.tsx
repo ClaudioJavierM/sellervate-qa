@@ -133,14 +133,19 @@ export default async function BrandPage({ params, searchParams }: PageProps<'/br
                         const issue = report.issues.find((i) => i.key === key);
                         return issue ? <IssueChip key={key} label={issue.label} severity={issue.severity} /> : null;
                       })}
-                      <span className="ml-auto">{e.author} · {formatSentAt(e.sentAt)}</span>
+                      <span className="ml-auto">
+                        {/* Who wrote it is internal; the client sees the reply, not the person. */}
+                        <span className="print:hidden">{e.author} · </span>
+                        {formatSentAt(e.sentAt)}
+                      </span>
                     </div>
                     <Link href={`/review/${e.replyId}?window=week`} className="mt-2 block font-medium hover:text-accent">
                       {e.subject}
                     </Link>
-                    <p className="mt-1 line-clamp-2 font-serif text-sm text-ink-soft">{e.body}</p>
+                    <p className="mt-1 line-clamp-2 whitespace-pre-line font-serif text-sm text-ink-soft print:line-clamp-none">{e.body}</p>
                     {e.note && (
-                      <p className="mt-2 border-l-2 border-line-strong pl-3 text-sm">
+                      // Coaching notes are written for the specialist, never printed for the client.
+                      <p className="mt-2 border-l-2 border-line-strong pl-3 text-sm print:hidden">
                         {e.note} <span className="text-muted">— {e.reviewer}</span>
                       </p>
                     )}
